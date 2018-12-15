@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+        crossorigin="anonymous">
+
+    <title>IASIP GiftTastic</title>
+</head>
+
+<body>
+    <div class="container"><br>
+
+        <header class="jumbotron">
+            <h1>It's Always Sunny In Philadelphia</h1>
+        </header>
+
+
+        <div id="buttons-view"></div><br>
+
+
+        <form class="navbar-form navbar-right" id="movie-form">
+            <div class="form-group">
+                <label for="movie-input">
+                    <h3>Add your favorite character from IASIP</h3>
+                </label>
+            </div>
+            <input type="text" id="movie-input"><br>
+
+
+            <input id="add-movie" button type="submit" class="btn btn-deafult" value="Submit">
+        </form>
+
+
+        <div id="movies-view" data-state="still"></div>
+
+    </div>
+
+    <style>
+    
+    body {
+	font-family: 'Noto Sans', sans-serif;
+	background: #900009;
+	color: #fff;
+}
+
+.container {
+	position: relative;
+}
+
+header.jumbotron {
+	background: #C12C1E;
+	border-radius: 24px;
+}
+
+p {
+	font-family: 'Space Mono', monospace;
+	padding-top: 10px;
+	font-size: 18px;
+
+}
+
+
+h1 {
+	font-family: 'Space Mono', monospace;
+	font-style: bold;
+	font-size: 22px;
+	text-align: center;
+	position: relative;
+	letter-spacing: 8px;
+}
+
+h3 {
+	font-family: 'Space Mono', monospace;
+	color: orange;
+	padding-right: 10px;
+	padding-bottom: 10px;
+}
+
+.drink-milk {
+	background: black;
+	border-radius: 12px;
+	color: white;
+	font-style: Courier New;
+	font-size: 15px;
+	padding: 10px;
+	margin: 5px;
+	margin-top: 20px;
+
+}
+
+#movie-form {
+	text-align: right;
+}
+
+
+
+input#movie-input {
+	color: #000;
+}
+
+input#add-movie.btn,btn-deafult {
+	color: #000;
+}
+</style>
+
+    <script>
+
+    
+
+        //array of characters	
+        $(document).ready(function () {
+
+            var topics = ["Charlie Kelly", "Dennis Reynolds", "Mac", "Fat Mac", "Dee Reynolds", "Frank Reynolds", "The Waitress", "Gail the Snail", "Charlies Mom", "Macs Mom", "The McPoyles"];
+
+            //  create topics array buttons
+            function renderButtons() {
+                $('#buttons-view').empty();
+
+                for (var i = 0; i < topics.length; i++) {
+                    //create all buttons
+                    var a = $('<button>');
+                    a.addClass('drink-milk');
+                    a.attr('data-name', topics[i]);
+                    a.text(topics[i]);
+                    $('#buttons-view').append(a);
+                }
+            }
+            renderButtons();
+
+            //on button click
+            $(document).on('click', '.drink-milk', function () {
+
+                //new variable will log the text data from each button
+                var milkSteak = $(this).html();
+                // console.log(milkSteak);
+
+                var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + milkSteak + "UCNqt2nJnb0o2kO7dulrctGQTkghgXrn";
+                // console.log(queryURL);
+
+                // Creating an AJAX call for the specific movie button being clicked
+                $.ajax({
+                    url: queryURL,
+                    method: "GET"
+                }).done(function (response) {
+
+                    var results = response.data;
+                    //console.log(results);
+                    //empties the div before adding more gifs
+                    $('#movies-view').empty();
+                    for (var j = 0; j < results.length; j++) {
+                        var imageDiv = $('<div>');
+                        var imageView = results[j].images.fixed_height.url;
+                        var still = results[j].images.fixed_height_still.url;
+                        // console.log(imageView);  
+
+                        var gifImage = $('<img>').attr("src", still).attr('data-animate', imageView).attr('data-still', still);
+                        gifImage.attr('data-state', 'still');
+                        $('#movies-view').prepend(gifImage);
+                        gifImage.on('click', playGif);
+
+                        // Pulling ratings for each movie
+                        var rating = results[j].rating;
+                        // console.log(rating);
+                        var displayRated = $('<p>').text("Rating: " + rating);
+                        $('#movies-view').prepend(displayRated);
+                    } // end for loop
+
+                }); // done response
+
+                //function to stop and animate gifs
+                function playGif() {
+                    var state = $(this).attr('data-state');
+                    // console.log(state);
+                    if (state == 'still') {
+                        $(this).attr('src', $(this).data('animate'));
+                        $(this).attr('data-state', 'animate');
+                    } else {
+                        $(this).attr('src', $(this).data('still'));
+                        $(this).attr('data-state', 'still');
+                    }
+
+                } //end of on click function
+
+            }); //end of document on click 
+
+            //adding new button to array
+            $(document).on('click', '#add-movie', function () {
+                if ($('#movie-input').val().trim() == '') {
+                    alert('Input can not be left blank');
+                }
+                else {
+                    var movies = $('#movie-input').val().trim();
+                    topics.push(movies);
+                    $('#movie-input').val('');
+                    renderButtons();
+                    return false;
+
+                }
+
+            });
+
+
+        }); // end click function
+
+
+    </script>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+
+    <iframe width="420" height="315" src="https://www.youtube.com/embed/WKFIDLMliHo?autoplay=1" frameborder="0" allowfullscreen=""></iframe>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
