@@ -9,6 +9,12 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
         crossorigin="anonymous">
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    </head>
+
 
     <title>IASIP GiftTastic</title>
 </head>
@@ -24,94 +30,94 @@
         <div id="buttons-view"></div><br>
 
 
-        <form class="navbar-form navbar-right" id="movie-form">
+        <form class="navbar-form navbar-right" id="gif-form">
             <div class="form-group">
-                <label for="movie-input">
+                <label for="gif-input">
                     <h3>Add your favorite character from IASIP</h3>
                 </label>
             </div>
-            <input type="text" id="movie-input"><br>
+            <input type="text" id="gif-input"><br>
 
 
-            <input id="add-movie" button type="submit" class="btn btn-deafult" value="Submit">
+            <input id="add-gif" button type="submit" class="btn btn-deafult" value="Submit">
         </form>
 
 
-        <div id="movies-view" data-state="still"></div>
+        <div id="gifs-view" data-state="still"></div>
 
     </div>
 
     <style>
-    
-    body {
-	font-family: 'Noto Sans', sans-serif;
-	background: #900009;
-	color: #fff;
-}
+        body {
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            background: rgb(243, 243, 43);
+            color: #fff;
+        }
 
-.container {
-	position: relative;
-}
+        .container {
+            position: relative;
+        }
 
-header.jumbotron {
-	background: #C12C1E;
-	border-radius: 24px;
-}
+        header.jumbotron {
+            background: black;
+            border-radius: 24px;
+        }
 
-p {
-	font-family: 'Space Mono', monospace;
-	padding-top: 10px;
-	font-size: 18px;
+        p {
+            font-family: 'Space Mono', monospace;
+            padding-top: 10px;
+            font-size: 18px;
 
-}
-
-
-h1 {
-	font-family: 'Space Mono', monospace;
-	font-style: bold;
-	font-size: 22px;
-	text-align: center;
-	position: relative;
-	letter-spacing: 8px;
-}
-
-h3 {
-	font-family: 'Space Mono', monospace;
-	color: orange;
-	padding-right: 10px;
-	padding-bottom: 10px;
-}
-
-.drink-milk {
-	background: black;
-	border-radius: 12px;
-	color: white;
-	font-style: Courier New;
-	font-size: 15px;
-	padding: 10px;
-	margin: 5px;
-	margin-top: 20px;
-
-}
-
-#movie-form {
-	text-align: right;
-}
+        }
 
 
+        h1 {
+            font-family: 'Space Mono', monospace;
+            font-style: bold;
+            font-size: 22px;
+            text-align: center;
+            position: relative;
+            letter-spacing: 8px;
+        }
 
-input#movie-input {
-	color: #000;
-}
+        h3 {
+            font-family: 'Space Mono', monospace;
+            color: orange;
+            padding-right: 10px;
+            padding-bottom: 10px;
+        }
 
-input#add-movie.btn,btn-deafult {
-	color: #000;
-}
-</style>
+        .drink-milk {
+            background: black;
+            border-radius: 12px;
+            color: white;
+            font-style: Courier New;
+            font-size: 15px;
+            padding: 10px;
+            margin: 5px;
+            margin-top: 20px;
+
+        }
+
+        #gif-form {
+            text-align: right;
+        }
+
+
+
+        input#gif-input {
+            color: #000;
+        }
+
+        input#add-gif.btn,
+        btn-deafult {
+            color: #000;
+        }
+    </style>
 
     <script>
 
-    
+
 
         //array of characters	
         $(document).ready(function () {
@@ -140,10 +146,10 @@ input#add-movie.btn,btn-deafult {
                 var milkSteak = $(this).html();
                 // console.log(milkSteak);
 
-                var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + milkSteak + "UCNqt2nJnb0o2kO7dulrctGQTkghgXrn";
+                var queryURL = "http://api.giphy.com/v1/gifs/search?q=" + milkSteak + "&api_key=UCNqt2nJnb0o2kO7dulrctGQTkghgXrn&limit=10";
                 // console.log(queryURL);
 
-                // Creating an AJAX call for the specific movie button being clicked
+                // Creating an AJAX call for the specific gif button being clicked
                 $.ajax({
                     url: queryURL,
                     method: "GET"
@@ -152,7 +158,7 @@ input#add-movie.btn,btn-deafult {
                     var results = response.data;
                     //console.log(results);
                     //empties the div before adding more gifs
-                    $('#movies-view').empty();
+                    $('#gifs-view').empty();
                     for (var j = 0; j < results.length; j++) {
                         var imageDiv = $('<div>');
                         var imageView = results[j].images.fixed_height.url;
@@ -161,14 +167,14 @@ input#add-movie.btn,btn-deafult {
 
                         var gifImage = $('<img>').attr("src", still).attr('data-animate', imageView).attr('data-still', still);
                         gifImage.attr('data-state', 'still');
-                        $('#movies-view').prepend(gifImage);
+                        $('#gifs-view').prepend(gifImage);
                         gifImage.on('click', playGif);
 
-                        // Pulling ratings for each movie
+                        // Pulling ratings for each gif
                         var rating = results[j].rating;
                         // console.log(rating);
                         var displayRated = $('<p>').text("Rating: " + rating);
-                        $('#movies-view').prepend(displayRated);
+                        $('#gifs-view').prepend(displayRated);
                     } // end for loop
 
                 }); // done response
@@ -190,14 +196,14 @@ input#add-movie.btn,btn-deafult {
             }); //end of document on click 
 
             //adding new button to array
-            $(document).on('click', '#add-movie', function () {
-                if ($('#movie-input').val().trim() == '') {
+            $(document).on('click', '#add-gif', function () {
+                if ($('#gif-input').val().trim() == '') {
                     alert('Input can not be left blank');
                 }
                 else {
-                    var movies = $('#movie-input').val().trim();
-                    topics.push(movies);
-                    $('#movie-input').val('');
+                    var gifs = $('#gif-input').val().trim();
+                    topics.push(gifs);
+                    $('#gif-input').val('');
                     renderButtons();
                     return false;
 
@@ -206,17 +212,17 @@ input#add-movie.btn,btn-deafult {
             });
 
 
-        }); // end click function
+        });
 
 
     </script>
 
     <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 
-    <iframe width="420" height="315" src="https://www.youtube.com/embed/WKFIDLMliHo?autoplay=1" frameborder="0" allowfullscreen=""></iframe>
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-        crossorigin="anonymous"></script>
+
+
+
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
         crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
